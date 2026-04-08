@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Registro</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css">
 </head>
 <body>
     <div class="container">
@@ -35,5 +36,19 @@
             <button type="submit">Guardar Cambios</button>
         </form>
     </div>
+
+    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+    <script>
+        document.addEventListener('click', function(e) {
+            var link = e.target.closest('a');
+            if (link && link.href && !link.href.startsWith('javascript')) {
+                NProgress.start();
+            }
+        });
+        document.querySelectorAll('form').forEach(function(form) {
+            form.addEventListener('submit', function() { NProgress.start(); });
+        });
+        window.addEventListener('load', function() { NProgress.done(); });
+    </script>
 </body>
 </html>

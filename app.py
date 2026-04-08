@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask import jsonify
 import psycopg2
 import requests
@@ -7,6 +7,7 @@ import os
 FACTILIZA_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDQxNSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.YLU3smsbaMKFGSz-PccnOZIJQszi_WZNKfFD-P5vGQI'
 
 app = Flask(__name__, template_folder='templates')
+app.secret_key = 'clave_secreta_practica'
 
 # Configuración de la base de datos
 DB_HOST = 'dpg-d7bbofpr0fns73b1hv2g-a.oregon-postgres.render.com'
@@ -74,8 +75,8 @@ def registrar():
     direccion = request.form['direccion']
     telefono = request.form['telefono']
     crear_persona(dni, nombre, apellido, direccion, telefono)
-    mensaje_confirmacion = "Registro Exitoso"
-    return redirect(url_for('index', mensaje_confirmacion=mensaje_confirmacion))
+    flash('Registro creado exitosamente', 'success')
+    return redirect(url_for('index'))
 
 @app.route('/administrar')
 def administrar():
@@ -103,6 +104,7 @@ def actualizar(dni):
                    (nombre, apellido, direccion, telefono, dni))
     conn.commit()
     conn.close()
+    flash('Registro actualizado exitosamente', 'success')
     return redirect(url_for('administrar'))
 
 @app.route('/eliminar/<dni>', methods=['POST'])
@@ -113,6 +115,7 @@ def eliminar_registro(dni):
     cursor.execute("DELETE FROM personas WHERE dni = %s", (dni,))
     conn.commit()
     conn.close()
+    flash('Registro eliminado exitosamente', 'success')
     return redirect(url_for('administrar'))
 
 if __name__ == '__main__':

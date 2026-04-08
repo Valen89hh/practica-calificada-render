@@ -5,8 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrar Registros</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css">
 </head>
 <body>
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">
+        {{ message }}
+        <span class="alert-close" onclick="this.parentElement.remove()">&times;</span>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
     <div class="container">
         <h1>Administrar Registros</h1>
         <a href="/" class="administrar-link">Volver al Registro</a>
@@ -35,7 +48,7 @@
                     <td>
                         <a href="/editar/{{ registro[1] }}" style="display:inline-block; background-color:#007bff; color:#fff; padding:6px 12px; border-radius:5px; text-decoration:none; margin-right:5px;">Editar</a>
                         <form action="/eliminar/{{ registro[1] }}" method="post" style="display:inline;">
-                            <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este registro?');" style="background-color: #dc3545;">Eliminar</button>
+                            <button type="submit" onclick="return confirm('&iquest;Est&aacute;s seguro de eliminar este registro?');" style="background-color: #dc3545;">Eliminar</button>
                         </form>
                     </td>
                 </tr>
@@ -46,5 +59,23 @@
         <p style="text-align: center; margin-top: 20px;">No hay registros disponibles.</p>
         {% endif %}
     </div>
+
+    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+    <script>
+        document.addEventListener('click', function(e) {
+            var link = e.target.closest('a');
+            if (link && link.href && !link.href.startsWith('javascript')) {
+                NProgress.start();
+            }
+        });
+        document.querySelectorAll('form').forEach(function(form) {
+            form.addEventListener('submit', function() { NProgress.start(); });
+        });
+        window.addEventListener('load', function() { NProgress.done(); });
+
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(el) { el.remove(); });
+        }, 4000);
+    </script>
 </body>
 </html>
