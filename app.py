@@ -82,6 +82,29 @@ def administrar():
     registros=obtener_registros()
     return render_template('administrar.html',registros=registros)
 
+@app.route('/editar/<dni>')
+def editar(dni):
+    conn = conectar_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM personas WHERE dni = %s", (dni,))
+    registro = cursor.fetchone()
+    conn.close()
+    return render_template('editar.html', registro=registro)
+
+@app.route('/actualizar/<dni>', methods=['POST'])
+def actualizar(dni):
+    nombre = request.form['nombre']
+    apellido = request.form['apellido']
+    direccion = request.form['direccion']
+    telefono = request.form['telefono']
+    conn = conectar_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE personas SET nombre=%s, apellido=%s, direccion=%s, telefono=%s WHERE dni=%s",
+                   (nombre, apellido, direccion, telefono, dni))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('administrar'))
+
 @app.route('/eliminar/<dni>', methods=['POST'])
 def eliminar_registro(dni):
     conn = psycopg2.connect(

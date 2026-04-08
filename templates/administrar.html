@@ -33,6 +33,7 @@
                     <td>{{ registro[4] }}</td>
                     <td>{{ registro[5] }}</td>
                     <td>
+                        <a href="/editar/{{ registro[1] }}" style="display:inline-block; background-color:#007bff; color:#fff; padding:6px 12px; border-radius:5px; text-decoration:none; margin-right:5px;">Editar</a>
                         <form action="/eliminar/{{ registro[1] }}" method="post" style="display:inline;">
                             <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este registro?');" style="background-color: #dc3545;">Eliminar</button>
                         </form>

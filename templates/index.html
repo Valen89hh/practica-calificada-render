@@ -37,7 +37,7 @@
                 <label for="telefono">Teléfono:</label>
                 <input type="text" id="telefono" name="telefono">
             </div>
-            <button type="submit" onclick="mostrarMensaje()">Registrar</button>
+            <button type="submit" onclick="return validarFormulario()">Registrar</button>
         </form>
     </div>
 
@@ -51,6 +51,27 @@
 
     <!-- Script para manejar el modal y consulta DNI -->
     <script>
+        function validarFormulario() {
+            var dni = document.getElementById('dni').value.trim();
+            var nombre = document.getElementById('nombre').value.trim();
+            var apellido = document.getElementById('apellido').value.trim();
+
+            if (dni.length !== 8) {
+                alert('El DNI debe tener 8 dígitos');
+                return false;
+            }
+            if (nombre === '') {
+                alert('El nombre es obligatorio');
+                return false;
+            }
+            if (apellido === '') {
+                alert('El apellido es obligatorio');
+                return false;
+            }
+            mostrarMensaje();
+            return true;
+        }
+
         function mostrarMensaje() {
             var modal = document.getElementById('modal');
             modal.style.display = 'block';
