@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask import jsonify
 import psycopg2
+import requests
 import os
+
+FACTILIZA_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MDQxNSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.YLU3smsbaMKFGSz-PccnOZIJQszi_WZNKfFD-P5vGQI'
 
 app = Flask(__name__, template_folder='templates')
 
@@ -37,6 +40,27 @@ def obtener_registros():
     registros = cursor.fetchall()
     conn.close()
     return registros
+
+@app.route('/consultar_dni/<dni>')
+def consultar_dni(dni):
+    try:
+        response = requests.get(
+            f'https://api.factiliza.com/v1/dni/info/{dni}',
+            headers={'Authorization': f'Bearer {FACTILIZA_TOKEN}'}
+        )
+        data = response.json()
+        if data.get('success'):
+            info = data['data']
+            return jsonify({
+                'success': True,
+                'nombres': info.get('nombres', ''),
+                'apellido_paterno': info.get('apellido_paterno', ''),
+                'apellido_materno': info.get('apellido_materno', ''),
+                'direccion': info.get('direccion_completa', '')
+            })
+        return jsonify({'success': False, 'message': 'DNI no encontrado'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
 
 @app.route('/')
 def index():

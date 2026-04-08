@@ -15,7 +15,11 @@
         <form action="/registrar" method="post">
             <div class="form-group">
                 <label for="dni">DNI:</label>
-                <input type="text" id="dni" name="dni" required>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="dni" name="dni" maxlength="8" required style="flex: 1;">
+                    <button type="button" id="btn-buscar" onclick="buscarDNI()" style="background-color: #28a745; white-space: nowrap;">Buscar</button>
+                </div>
+                <span id="dni-status" style="font-size: 12px; margin-top: 5px; display: block;"></span>
             </div>
             <div class="form-group">
                 <label for="nombre">Nombre:</label>
@@ -45,7 +49,7 @@
         </div>
     </div>
 
-    <!-- Script para manejar el modal -->
+    <!-- Script para manejar el modal y consulta DNI -->
     <script>
         function mostrarMensaje() {
             var modal = document.getElementById('modal');
@@ -55,6 +59,43 @@
         function cerrarMensaje() {
             var modal = document.getElementById('modal');
             modal.style.display = 'none';
+        }
+
+        function buscarDNI() {
+            var dni = document.getElementById('dni').value.trim();
+            var status = document.getElementById('dni-status');
+
+            if (dni.length !== 8) {
+                status.textContent = 'El DNI debe tener 8 dígitos';
+                status.style.color = 'red';
+                return;
+            }
+
+            status.textContent = 'Buscando...';
+            status.style.color = '#007bff';
+            document.getElementById('btn-buscar').disabled = true;
+
+            fetch('/consultar_dni/' + dni)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('nombre').value = data.nombres;
+                        document.getElementById('apellido').value = data.apellido_paterno + ' ' + data.apellido_materno;
+                        document.getElementById('direccion').value = data.direccion;
+                        status.textContent = 'Datos encontrados';
+                        status.style.color = 'green';
+                    } else {
+                        status.textContent = 'DNI no encontrado';
+                        status.style.color = 'red';
+                    }
+                })
+                .catch(error => {
+                    status.textContent = 'Error al consultar';
+                    status.style.color = 'red';
+                })
+                .finally(() => {
+                    document.getElementById('btn-buscar').disabled = false;
+                });
         }
     </script>
 </body>
